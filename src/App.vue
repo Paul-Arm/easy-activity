@@ -15,11 +15,11 @@
           <font-awesome-icon icon="newspaper" style="font-size: 1.5em" />
           <small>Aktuelles</small>
         </b-nav-item>
-        <b-nav-item to="/attendance" :class="{ active: $route.path === '/attendance' }">
+        <b-nav-item to="/activities" :class="{ active: $route.path === '/activities' }">
           <font-awesome-icon icon="fa-solid fa-calendar-days" style="font-size: 1.5em" />
           <small>Aktivitäten</small>
         </b-nav-item>
-        <b-nav-item to="/flight-operations" :class="{ active: $route.path === '/flight-operations' }">
+        <b-nav-item to="/groups" :class="{ active: $route.path === '/groups' }">
           <font-awesome-icon icon="fa-solid fa-people-group" style="font-size: 1.5em" />
           <small>Gruppe</small>
         </b-nav-item>

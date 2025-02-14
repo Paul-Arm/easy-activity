@@ -13,6 +13,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 
+import "leaflet/dist/leaflet.css";
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

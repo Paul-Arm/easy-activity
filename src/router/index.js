@@ -5,6 +5,7 @@ import VueRouter from "vue-router";
 import loginView from '../views/LoginView.vue';
 
 import homeView from "../views/homeView.vue";
+import ActivitiesView from "@/views/activities/activitiesView.vue";
 
 Vue.use(VueRouter);
 
@@ -13,6 +14,8 @@ const routes = [
   { path: '/login', name: "LoginView", component: loginView },
 
   { path: "/", name: "HomeView", component: homeView, meta: { requiresAuth: true } },
+
+  { path: "/activities", name: "ActivitiesView", component: ActivitiesView, meta: { requiresAuth: true } },
 ];
 
 
