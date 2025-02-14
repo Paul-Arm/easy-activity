@@ -89,7 +89,7 @@ export default {
         html: `
           <h5>Passwort vergessen?</h5>
           Kein Problem! Bitte wende dich an unsere E-Mail-Adresse:<br>
-          <a href="mailto:support@sfce-vereinsplattform.org?subject=Supportanfrage%20-%20Passwort%20vergessen">support@sfce-vereinsplattform.org</a>
+          <a href="mailto:support@easyactivity.org?subject=Supportanfrage%20-%20Passwort%20vergessen">support@easyactivity.org</a>
         `,
         icon: "info",
         timer: 5000,

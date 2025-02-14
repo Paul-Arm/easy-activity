@@ -1,4 +1,4 @@
-# sfce-app
+# easyacitivity
 
 ## Project setup
 ```
