@@ -1,0 +1,23 @@
+{
+    "name": "EasyAcitivity",
+    "short_name": "EasyAcitivity",
+    "start_url": "/",
+    "theme_color": "#4B99FF",
+    "background_color": "#4B99FF",
+    "display": "standalone",
+    "icons": [
+      {
+        "src": "img/icons/favicon-16x16.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "img/icons/favicon-132x32.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "version": "0.1",
+    "version_name": "beta"
+  }
+  
