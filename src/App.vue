@@ -23,10 +23,6 @@
           <font-awesome-icon icon="fa-solid fa-people-group" style="font-size: 1.5em" />
           <small>Gruppe</small>
         </b-nav-item>
-        <b-nav-item to="/account" :class="{ active: $route.path === '/account' }">
-          <font-awesome-icon icon="circle-user" style="font-size: 1.5em" />
-          <small>Account</small>
-        </b-nav-item>
       </b-navbar-nav>
     </b-navbar>
   </div>
