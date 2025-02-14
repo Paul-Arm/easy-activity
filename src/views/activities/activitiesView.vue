@@ -42,7 +42,7 @@
         zoom: 13,
         tileLayerUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         customIcon: L.icon({
-            iconUrl: "http://localhost:8080/img/others/marker.png", // Beispiel-Icon
+            iconUrl: "https://easy-activity.vercel.app/img/others/marker.png", // Beispiel-Icon
             iconSize: [32, 32],
             iconAnchor: [16, 32],
         }),
