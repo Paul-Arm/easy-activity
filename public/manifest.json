@@ -1,6 +1,6 @@
 {
-    "name": "EasyAcitivity",
-    "short_name": "EasyAcitivity",
+    "name": "EasyActivity",
+    "short_name": "EasyActivity",
     "start_url": "/",
     "theme_color": "#4B99FF",
     "background_color": "#4B99FF",
@@ -17,7 +17,7 @@
         "type": "image/png"
       }
     ],
-    "version": "0.2.2",
+    "version": "0.2.3",
     "version_name": "beta"
   }
   
