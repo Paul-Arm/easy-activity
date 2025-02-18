@@ -12,7 +12,7 @@
         
         <div v-if="allActivites">
           <b-card-group deck>
-            <b-card v-for="(activity, index) in activities" :key="index" class="mb-2">
+            <b-card v-for="(activity, index) in filteredActivities" :key="index" class="mb-2">
               <b-card-body>
                 <b-card-title>{{ activity.Titel }}</b-card-title>
                 <b-card-text>{{ activity.Beschreibung }}</b-card-text>
@@ -22,7 +22,7 @@
         </div>
         <div v-else>
           <b-card-group deck>
-            <b-card v-for="(activity, index) in ownActivites" :key="index" class="mb-2">
+            <b-card v-for="(activity, index) in filteredOwnActivities" :key="index" class="mb-2">
               <b-card-body>
                 <b-card-title>{{ activity.Titel }}</b-card-title>
                 <b-card-text>{{ activity.Beschreibung }}</b-card-text>
@@ -52,8 +52,8 @@
         allActivites: true,
 
 
-        activities: null,
-        ownActivites: null,
+        activities: [],
+        ownActivites: [],
 
         apiUrl: process.env.VUE_APP_API_URL,
       };
@@ -77,6 +77,26 @@
         return this.allActivites === true
           ? "outline-secondary"
           : "secondary";
+      },
+
+      filteredActivities() {
+        return this.activities.filter(item => {
+          const searchLower = this.searchQuery.toLowerCase();
+          return (
+            item.Titel.toLowerCase().includes(searchLower) ||
+            item.Beschreibung.toLowerCase().includes(searchLower)
+          );
+        });
+      },
+
+      filteredOwnActivities() {
+        return this.ownActivites.filter(item => {
+          const searchLower = this.searchQuery.toLowerCase();
+          return (
+            item.Titel.toLowerCase().includes(searchLower) ||
+            item.Beschreibung.toLowerCase().includes(searchLower)
+          );
+        });
       },
     },
   
