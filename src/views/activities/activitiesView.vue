@@ -30,9 +30,6 @@
             </b-card>
           </b-card-group>
         </div>
-        
-
-
     </div>
   </template>
   
@@ -123,7 +120,7 @@
       axios
         .get(this.apiUrl + "/Aktivitaet")
         .then((response) => {
-          this.activities = response.data.content;
+          this.activities = response.data;
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
