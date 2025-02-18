@@ -14,7 +14,7 @@
         <b-navbar-nav class="ml-auto">
           <b-nav-item style="color: white !important;" @click="openModalInvites()"><b-icon icon="card-list"></b-icon>&nbsp;Gruppeneinladungen</b-nav-item>
           <b-nav-item style="color: white !important;" @click="logoutUser()"><b-icon icon="box-arrow-left"></b-icon>&nbsp;Logout</b-nav-item>
-          <b-nav-item style="color: white !important;" disabled>{{ userData.username }} - {{ userData.Email }}</b-nav-item>
+          <b-nav-item style="color: white !important;" disabled v-if="userData">{{ userData.username }} - {{ userData.Email }}</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
