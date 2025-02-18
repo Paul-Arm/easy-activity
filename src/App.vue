@@ -3,7 +3,7 @@
     <b-navbar toggleable style="background-color: #4b99ff;">
       <b-navbar-brand href="#" style="margin-left: 2rem; color: white;">EasyActivity</b-navbar-brand>
 
-      <b-navbar-toggle target="navbar-toggle-collapse" style="margin-right: 2rem;" v-if="currentRouteName !== 'LoginView'">
+      <b-navbar-toggle target="navbar-toggle-collapse" style="margin-right: 2rem;" v-if="currentRouteName !== 'LoginView'" @click="fetchUserData()">
         <template #default="{ expanded }">
           <b-icon style="color: white;" v-if="expanded" icon="chevron-bar-up"></b-icon>
           <b-icon style="color: white;" v-else icon="chevron-bar-down"></b-icon>
@@ -106,6 +106,21 @@ export default {
             });
     },
 
+    fetchUserData() {
+      axios
+      .get(this.apiUrl + "/MeinProfiel")
+      .then((response) => {
+        this.userData = response.data;
+      })
+      .catch((error) => {
+          console.error("Error fetching data:", error);
+
+          if (error.status === 401) {
+              localStorage.removeItem("token");
+          }
+      });
+    },
+
     async acceptInvite(groupID) {
       const Toast = this.$swal.mixin({
         toast: true,
@@ -143,18 +158,6 @@ export default {
   },
 
   mounted() {
-    axios
-      .get(this.apiUrl + "/MeinProfiel")
-      .then((response) => {
-        this.userData = response.data;
-      })
-      .catch((error) => {
-          console.error("Error fetching data:", error);
-
-          if (error.status === 401) {
-              localStorage.removeItem("token");
-          }
-      });
   }
 };
 
