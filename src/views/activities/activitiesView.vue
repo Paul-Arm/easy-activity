@@ -16,6 +16,7 @@
               <b-card-body>
                 <b-card-title>{{ activity.Titel }}</b-card-title>
                 <b-card-text>{{ activity.Beschreibung }}</b-card-text>
+                <b-card-text>{{ activity.Straße }} {{ activity.Hausnummer }} - {{ activity.Ort }} ({{ activity.Postleitzahl }}), {{ activity.Staat }}</b-card-text>
               </b-card-body>
             </b-card>
           </b-card-group>
@@ -26,6 +27,7 @@
               <b-card-body>
                 <b-card-title>{{ activity.Titel }}</b-card-title>
                 <b-card-text>{{ activity.Beschreibung }}</b-card-text>
+                <b-card-text>{{ activity.Straße }} {{ activity.Hausnummer }} - {{ activity.Ort }} ({{ activity.Postleitzahl }}), {{ activity.Staat }}</b-card-text>
               </b-card-body>
             </b-card>
           </b-card-group>
