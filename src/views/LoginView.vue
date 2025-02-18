@@ -32,7 +32,14 @@
               required
             ></b-form-input>
             <b-input-group-append>
-              <b-button @click="togglePassword" variant="outline-secondary" style="border-radius: 0 0.375rem 0.375rem 0; border-color: #dee2e6;">
+              <b-button
+                @click="togglePassword"
+                variant="outline-secondary"
+                style="
+                  border-radius: 0 0.375rem 0.375rem 0;
+                  border-color: #dee2e6;
+                "
+              >
                 <b-icon :icon="showPassword ? 'eye-slash' : 'eye'"></b-icon>
               </b-button>
             </b-input-group-append>
@@ -40,8 +47,8 @@
         </b-form-group>
 
         <small
-          ><b-link @click="showAlert()" style="color: #4b99ff"
-            >Passwort vergessen?</b-link
+          ><b-link v-b-modal.registration-modal style="color: #4b99ff"
+            >Registierung</b-link
           ></small
         >
 
@@ -54,6 +61,95 @@
         >
       </b-form>
 
+      <b-modal
+        id="registration-modal"
+        title="Registrierung"
+        hide-header-close
+        hide-footer
+        centered
+        size="lg"
+      >
+        <b-form @submit.prevent="handleRegistration()">
+          <b-form-group id="input-group-username" label-for="input-username">
+            <b-form-input
+              id="input-username"
+              v-model="registrationUsername"
+              type="text"
+              placeholder="Benutzername"
+              required
+            ></b-form-input>
+          </b-form-group>
+
+          <b-form-group
+            id="input-group-password"
+            label-for="input-password"
+            class="mt-2"
+          >
+            <b-input-group>
+              <b-form-input
+                id="input-password"
+                v-model="registrationPassword"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="Passwort"
+                required
+              ></b-form-input>
+              <b-input-group-append>
+                <b-button
+                  @click="togglePassword"
+                  variant="outline-secondary"
+                  style="
+                    border-radius: 0 0.375rem 0.375rem 0;
+                    border-color: #dee2e6;
+                  "
+                >
+                  <b-icon :icon="showPassword ? 'eye-slash' : 'eye'"></b-icon>
+                </b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-form-group>
+          <hr>
+          <b-form-group id="input-group-name" label-for="input-name"  class="mt-2">
+            <b-form-input
+              id="input-name"
+              v-model="registrationName"
+              type="text"
+              placeholder="Nachname"
+              required
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group id="input-group-firstname" label-for="input-firstname" class="mt-2">
+            <b-form-input
+              id="input-firstname"
+              v-model="registrationFirstname"
+              type="text"
+              placeholder="Vorname"
+              required
+            ></b-form-input>
+          </b-form-group>
+          <hr>
+          <b-form-group id="input-group-email" label-for="input-email" class="mt-2">
+            <b-form-input
+              id="input-email"
+              v-model="registrationEmail"
+              type="email"
+              placeholder="E-Mail"
+              required
+            ></b-form-input>
+          </b-form-group>
+          <hr>
+          <b-button
+            class="mt-2"
+            type="submit"
+            style="background-color: #4b99ff; border-color: #4b99ff"
+            block
+            >Registrieren</b-button
+          >
+        </b-form>
+        <b-alert v-if="this.errorMessage" show class="mt-3" variant="danger">{{
+          this.errorMessage
+        }}</b-alert>
+      </b-modal>
+
       <b-alert v-if="this.errorMessage" show class="mt-3" variant="danger">{{
         this.errorMessage
       }}</b-alert>
@@ -62,6 +158,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import { login } from "../services/auth";
 
 export default {
@@ -69,9 +166,18 @@ export default {
     return {
       username: "",
       password: "",
+
+      registrationUsername: "",
+      registrationPassword: "",
+      registrationName: "",
+      registrationFirstname: "",
+      registrationEmail: "",
+
       errorMessage: "",
 
       showPassword: false,
+
+      apiUrl: process.env.VUE_APP_API_URL,
     };
   },
   methods: {
@@ -80,22 +186,47 @@ export default {
         await login(this.username, this.password);
         this.$router.push("/");
       } catch (error) {
-        this.errorMessage = "Ungültige Anmeldeinformationen";
+        this.errorMessage = error;
       }
     },
 
-    showAlert() {
-      this.$swal({
-        html: `
-          <h5>Passwort vergessen?</h5>
-          Kein Problem! Bitte wende dich an unsere E-Mail-Adresse:<br>
-          <a href="mailto:support@easyactivity.org?subject=Supportanfrage%20-%20Passwort%20vergessen">support@easyactivity.org</a>
-        `,
-        icon: "info",
-        timer: 5000,
-        timerProgressBar: true,
+    async handleRegistration() {
+      const Toast = this.$swal.mixin({
+        toast: true,
+        position: "top",
         showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", this.$swal.stopTimer);
+          toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+        },
       });
+
+      const body = {
+        anmeldename: this.registrationUsername,
+        passwort: this.registrationPassword,
+        name: this.registrationName,
+        vorname: this.registrationFirstname,
+        email: this.registrationEmail,
+        IstEventveranstalter: false,
+      };
+
+      axios
+        .post(this.apiUrl + "/create-user", body)
+        .then(async () => {
+          Toast.fire({
+            icon: "success",
+            title: "Benutzer erstellt",
+          });
+          this.$bvModal.hide("registration-modal");
+          await login(this.registrationUsername, this.registrationPassword);
+          this.$router.push("/");
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          this.errorMessage = error;
+        });
     },
 
     togglePassword() {

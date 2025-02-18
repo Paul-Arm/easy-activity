@@ -1,10 +1,22 @@
 <template>
   <div id="app">
-    <b-navbar style="background-color: #4b99ff;" class="px-3 p-3 d-flex justify-content-end align-items-center">
-      <div class="d-flex algin-items-center" v-if="currentRouteName !== 'LoginView'">
-        <div class="text-white font-weight-bold h5 m-2 d-flex" style="align-items: center;">{{ userName }}</div>
-        <b-avatar variant="light" src="/img/icons/party-pinguin.jpg" size="48px" class="shadow-sm"></b-avatar>
-      </div>
+    <b-navbar toggleable style="background-color: #4b99ff;">
+      <b-navbar-brand href="#" style="margin-left: 2rem; color: white;">EasyActivity</b-navbar-brand>
+
+      <b-navbar-toggle target="navbar-toggle-collapse" style="margin-right: 2rem;" v-if="currentRouteName !== 'LoginView'">
+        <template #default="{ expanded }">
+          <b-icon style="color: white;" v-if="expanded" icon="chevron-bar-up"></b-icon>
+          <b-icon style="color: white;" v-else icon="chevron-bar-down"></b-icon>
+        </template>
+      </b-navbar-toggle>
+
+      <b-collapse id="navbar-toggle-collapse" is-nav>
+        <b-navbar-nav class="ml-auto">
+          <b-nav-item style="color: white !important;" @click="openModalInvites()"><b-icon icon="card-list"></b-icon>&nbsp;Gruppeneinladungen</b-nav-item>
+          <b-nav-item style="color: white !important;" @click="logoutUser()"><b-icon icon="box-arrow-left"></b-icon>&nbsp;Logout</b-nav-item>
+          <b-nav-item style="color: white !important;" disabled>{{ userData.username }} - {{ userData.Email }}</b-nav-item>
+        </b-navbar-nav>
+      </b-collapse>
     </b-navbar>
 
     <router-view class="container"></router-view>
@@ -25,27 +37,104 @@
         </b-nav-item>
       </b-navbar-nav>
     </b-navbar>
+
+
+    <b-modal v-model="modalVisible" title="Gruppeneinladungen" hide-footer hide-header-close>
+        <div v-if="loading" class="text-center">
+            <b-spinner label="Lädt..."></b-spinner>
+        </div>
+        <div v-else>
+          <b-card
+            v-for="(group, index) in inviteGroups"
+            class="mb-2"
+            :key="index"
+            :header="group.Gruppenname"
+          >
+            <b-button-group class="w-100">
+              <b-button variant="success" @click="acceptInvite(group.GruppeID)">Annehmen</b-button>
+            </b-button-group>
+          </b-card>
+        </div>
+    </b-modal>
   </div>
   
 </template>
 
 <script>
+import axios from 'axios';
+import { logout } from "@/services/auth";
+
 export default {
   name: 'App',
   components: {
   },
   data() {
     return {
-      showInstallPrompt: false,
-      deferredPrompt: null,
+      loading: false,
+      modalVisible: false,
 
-      userName: "Max Mustermann"
+      inviteGroups: null,
 
+      userData: null,
+
+      apiUrl: process.env.VUE_APP_API_URL,
     };
   },
   methods: {
-    
+    async logoutUser()
+    {
+      await logout();
+      this.$router.push("/login");
+    },
 
+    openModalInvites() {
+        this.loading = true;
+        this.modalVisible = true;
+        
+        axios
+            .get(this.apiUrl + "/Gruppen/Einladungen")
+            .then((response) => {
+              this.inviteGroups = response.data;
+              this.loading = false;
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+    
+                if (error.status === 401) {
+                    localStorage.removeItem("token");
+                }
+            });
+    },
+
+    async acceptInvite(groupID) {
+      const Toast = this.$swal.mixin({
+        toast: true,
+        position: "top",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", this.$swal.stopTimer);
+          toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+        },
+      });
+
+      axios
+        .post(this.apiUrl + "/Gruppen/" + groupID + "/Beitreten")
+        .then(async () => {
+          Toast.fire({
+            icon: "success",
+            title: "Einladung angenommen",
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          Toast.fire({
+            icon: "error",
+            title: "Einladung konnte nicht angenommen werden",
+          });
+        });
+    },
   },
   computed: {
     currentRouteName() {
@@ -54,11 +143,18 @@ export default {
   },
 
   mounted() {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      this.deferredPrompt = e;
-      this.showInstallPrompt = true;
-    });
+    axios
+      .get(this.apiUrl + "/MeinProfiel")
+      .then((response) => {
+        this.userData = response.data;
+      })
+      .catch((error) => {
+          console.error("Error fetching data:", error);
+
+          if (error.status === 401) {
+              localStorage.removeItem("token");
+          }
+      });
   }
 };
 
@@ -121,35 +217,9 @@ small {
   border-radius: 7px;
 }
 
-
-.install-prompt {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff;
-  padding: 10px 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 11;
-}
-
-.install-prompt-ios {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff;
-  padding: 10px 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 11;
-}
-
 .b-navbar {
   padding: 1rem;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 </style>
