@@ -33,7 +33,7 @@
             </b-col>
         </b-row>
 
-        <b-modal v-model="modalVisible" :title="modalGroupName" hide-footer hide-header-close>
+        <b-modal v-model="modalVisible" :title="modalGroupName" ok-only ok-title="Schließen" ok-variant="secondary" hide-header-close>
             <div v-if="loading" class="text-center">
                 <b-spinner label="Lädt..."></b-spinner>
             </div>
@@ -56,6 +56,8 @@
                     </b-card>
                 </b-collapse>
 
+                <chatbox :groupid="modalGroupID"></chatbox>
+
                 <hr>
                 <h6>Benutzer einladen</h6>
                 <b-input-group class="mt-3">
@@ -68,7 +70,7 @@
                 <hr>
                 <div>
                     <div>Aktivitäten in dieser Gruppe:</div>
-                    <b-button style="font-size: 85%;" v-b-toggle.collapse-new-activity variant="link">Aktivität erstellen&nbsp;<b-icon icon="chevron-down"></b-icon></b-button>
+                    <b-button v-b-toggle.collapse-new-activity variant="link">Aktivität erstellen&nbsp;<b-icon icon="chevron-down"></b-icon></b-button>
                     <b-collapse id="collapse-new-activity" class="mt-2">
                         <b-card>
                             <b-form-group
@@ -80,7 +82,7 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-input id="title"></b-form-input>
+                                    <b-form-input id="title" v-model="title"></b-form-input>
                                 </b-form-group>
 
                                 <b-form-group
@@ -89,7 +91,7 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-input id="description"></b-form-input>
+                                    <b-form-input id="description" v-model="description"></b-form-input>
                                 </b-form-group>
 
                                 <hr>
@@ -100,7 +102,7 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-input id="street"></b-form-input>
+                                    <b-form-input id="street" v-model="street"></b-form-input>
                                 </b-form-group>
 
                                 <b-form-group
@@ -109,7 +111,7 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-input id="number"></b-form-input>
+                                    <b-form-input id="number" v-model="number"></b-form-input>
                                 </b-form-group>
 
                                 <b-form-group
@@ -118,7 +120,7 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-input id="postal-code"></b-form-input>
+                                    <b-form-input id="postal-code" v-model="postalCode"></b-form-input>
                                 </b-form-group>
 
                                 <b-form-group
@@ -127,7 +129,7 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-input id="city"></b-form-input>
+                                    <b-form-input id="city" v-model="city"></b-form-input>
                                 </b-form-group>
 
                                 <b-form-group
@@ -136,7 +138,7 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-input id="state"></b-form-input>
+                                    <b-form-input id="state" v-model="state"></b-form-input>
                                 </b-form-group>
 
                                 <hr>
@@ -147,8 +149,8 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-datepicker id="example-datepicker" class="mb-2"></b-form-datepicker>
-                                    <b-form-timepicker locale="de"></b-form-timepicker>
+                                    <b-form-datepicker id="start-datepicker" class="mb-2" v-model="startDate"></b-form-datepicker>
+                                    <b-form-timepicker id="start-timepicker" locale="de" v-model="startTime"></b-form-timepicker>
                                 </b-form-group>
 
                                 <b-form-group
@@ -157,8 +159,8 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-datepicker id="example-datepicker" class="mb-2"></b-form-datepicker>
-                                    <b-form-timepicker locale="de"></b-form-timepicker>
+                                    <b-form-datepicker id="end-datepicker" class="mb-2" v-model="endDate"></b-form-datepicker>
+                                    <b-form-timepicker id="end-timepicker" locale="de" v-model="endTime"></b-form-timepicker>
                                 </b-form-group>
 
                                 <b-form-group
@@ -167,13 +169,41 @@
                                     label-cols-sm="3"
                                     label-align-sm="right"
                                 >
-                                    <b-form-datepicker id="example-datepicker" class="mb-2"></b-form-datepicker>
-                                    <b-form-timepicker locale="de"></b-form-timepicker>
+                                    <b-form-datepicker id="deadline-datepicker" class="mb-2" v-model="votingDeadlineDate"></b-form-datepicker>
+                                    <b-form-timepicker id="deadline-timepicker" locale="de" v-model="votingDeadlineTime"></b-form-timepicker>
+                                </b-form-group>
+
+                                <b-form-group
+                                    label="Ortsabstimmung:"
+                                    label-for="local-vote"
+                                    label-cols-sm="3"
+                                    label-align-sm="right"
+                                >
+                                    <b-form-checkbox
+                                        id="local-vote"
+                                        name="local-vote"
+                                        v-model="localVote"
+                                        >
+                                    </b-form-checkbox>
+                                </b-form-group>
+
+                                <b-form-group
+                                    label="Zeitabstimmung:"
+                                    label-for="time-vote"
+                                    label-cols-sm="3"
+                                    label-align-sm="right"
+                                >
+                                    <b-form-checkbox
+                                        id="time-vote"
+                                        name="time-vote"
+                                        v-model="timeVote"
+                                        >
+                                    </b-form-checkbox>
                                 </b-form-group>
                                 
                                 <hr>
 
-                                <b-button variant="success" class="mt-2">Aktivität erstellen</b-button>
+                                <b-button variant="success" class="mt-2" @click="createActivity(modalGroupID)">Aktivität erstellen</b-button>
                             </b-form-group>
                         </b-card>
                     </b-collapse>
@@ -191,10 +221,12 @@
 
 <script>
 import axios from "axios";
+import { format } from 'date-fns';
+import chatbox from "@/components/chatboxView.vue";
   
   export default {
     name: "groupsView",
-    components: {},
+    components: {chatbox},
     data() {
       return {
         loading: false,
@@ -204,6 +236,22 @@ import axios from "axios";
         modalGroupName: "",
         modalGroupDescription: "",
         modalGroupMembers: null,
+
+        title: "",
+        description: "",
+        street: "",
+        number: "",
+        postalCode: "",
+        city: "",
+        state: "",
+        startDate: null,
+        startTime: null,
+        endDate: null,
+        endTime: null,
+        votingDeadlineDate: null,
+        votingDeadlineTime: null,
+        localVote: false,
+        timeVote: false,
 
         groups: null,
         groupActivities: null,
@@ -247,6 +295,70 @@ import axios from "axios";
                         localStorage.removeItem("token");
                     }
             });
+        },
+
+        createActivity(groupID) {
+            const Toast = this.$swal.mixin({
+                toast: true,
+                position: "top",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                toast.addEventListener("mouseenter", this.$swal.stopTimer);
+                toast.addEventListener("mouseleave", this.$swal.resumeTimer);
+                },
+            });
+
+            let startDate = format((new Date(this.startDate)), 'yyyy-MM-dd') + "T" + this.startTime + ".000Z";
+            let endDate = format((new Date(this.endDate)), 'yyyy-MM-dd') + "T" + this.endTime + ".000Z";
+
+
+            let openEnd = false;
+            if (this.endDate === null || this.endTime === null) {
+                openEnd = true;
+                endDate = startDate;
+            }
+
+            let votingDeadlineDate = format((new Date(this.votingDeadlineDate)), 'yyyy-MM-dd') + "T" + this.votingDeadlineTime + ".000Z";
+
+            const body = {
+                "Titel": this.title,
+                "Beschreibung": this.description,
+                "Adresse": {
+                    "Straße": this.street,
+                    "Hausnummer": this.number,
+                    "Postleitzahl": this.postalCode,
+                    "Ort": this.city,
+                    "Staat": this.state
+                },
+                "Startzeitpunkt": startDate,
+                "Endzeitpunkt": endDate,
+                "Ortsabstimmung": this.localVote,
+                "Zeitabstimmung": this.timeVote,
+                "GruppeID": groupID,
+                "Abstimmungsende": votingDeadlineDate,
+                "ZeitAlsSchnittmenge": true,
+                "OffenesEnde": openEnd
+            };
+
+            axios
+                .post(this.apiUrl + "/Aktivitaet", body)
+                .then(async () => {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Aktivität erstellt",
+                    });
+                    this.modalVisible = false;
+                    this.fetchGroups();
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                    Toast.fire({
+                        icon: "error",
+                        title: "Fehler beim Erstellen der Aktivität",
+                    });
+                });
         },
 
         fetchGroupMembers(groupID) {
@@ -295,7 +407,7 @@ import axios from "axios";
                     title: "Gruppe konnte nicht verlassen werden",
                 });
                 });
-            },
+        },
 
         inviteUserInGroup(groupID) {
             const Toast = this.$swal.mixin({
